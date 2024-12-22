@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestion des Utilisateurs</title>
+  <style>
+  /* le css a été fait avec l'aide d'une IA afin d'avoir un rendu plus attrayant, en effet je n'ai aucun gouts pour gerer les parties css...*/
+  body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+
+  h1, h2 {
+    color: #4CAF50;
+  }
+
+/* STYLE formulaire */
+  form {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 30px;
+  }
+
+  label {
+    font-size: 14px;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+  }
+
+  input {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0 15px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+
+  button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+  }
+
+  button:hover {
+    background-color: #45a049;
+  }
+
+  /* Style pour le tableau */
+  table {
+    width: 80%;
+    margin: 20px 0;
+    border-collapse: collapse;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+
+  th {
+    background-color: #f2f2f2;
+    color: #333;
+  }
+
+  td button {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  td button:hover {
+    background-color: #d32f2f;
+  }
+
+  /* Bouton de chargement des utilisateurs */
+  #loadUsersBtn {
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  #loadUsersBtn:hover {
+    background-color: #1976D2;
+  }
+
+  /* Style pour les messages d'alerte */
+  .alert {
+    color: #d32f2f;
+    font-weight: bold;
+  }
+</style>
+  <script>
+    async function fetchUsers() {  // fonction asynchrone pour utiliser await afin d'attendre que les opérations comme la recupération de données se terminent avant de continuer à executer du code
+      const res = await fetch('http://localhost:5000/users'); // envoi de la requête , mis en await afin d'attendreque la recup des données se termine avant de continuer le code
+      const users = await res.json();
+      const userList = document.getElementById('userList');
+      userList.innerHTML = '';
+      users.forEach(user => {
+        userList.innerHTML += `
+        <tr>
+            <td> ${user.name} </td> // le nom de l'utilisateur
+            <td>(${user.email}) </td>
+            <td><button onclick="deleteUser(${user.id})">Supprimer</button></td>
+            </tr>`; //chaque itération la ligne ajoute une nouvelle ligne
+      });
+    }
+    async function deleteUser(userId)
+    {
+        const res = await fetch(`http://localhost:5000/users/${userId}`,
+            {
+                method: 'DELETE'
+            });
+            if ( res.ok)
+            {
+            alert('Utilisateur supprimé avec succes');
+        fetchUsers(); //recharge la liste des utilisateurs apres suppression
+    }else{
+        alert('Erreur lors de la suppression utilisateur');
+    }
+}
+    async function addUser(e)
+    {
+        e.preventDefault(); //empecher le rechargement de la page lors du remplissage du formulaire
+
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+
+        if (!name || !email)
+    {
+        alert('remplir tous les champs');
+        return;
+    }
+
+    const res = await fetch('http://localhost:5000/users', 
+    
+    {
+        method: 'POST',
+        headers:{
+            'Content-Type': 'application/json',
+
+        },
+        body: JSON.stringify({name, email})
+    });
+
+    if (res.ok)
+    {
+        alert('Utilisateur ajouté avec succès');
+        fetchUsers();
+    }else{
+        alert('Erreur d ajout d utilisateur');
+    }
+    }
+  </script>
+</head>
+<body>
+    <!-- partie tableau et formulaire-->
+    <h1>Liste des Utilisateurs</h1>
+    <h2> Ajouter un Utilisateur</h2>
+    <form id="addUserForm" onsubmit="addUser(event)">
+        <div>
+            <label for="name">Nom</label>
+            <input type="text" id="name" required />
+            <label for="email">Email:</label>
+            <input type="email" id="email" required />
+        </div>
+        <button type="submit"> s'inscrire</button>
+    </form>
+    
+    
+    <table>
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Email</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="userList">
+        <!-- La liste des utilisateurs sera insérée ici -->
+      </tbody>
+    </table>
+    <button onclick="fetchUsers()">Charger les utilisateurs</button>
+  </body>
+</html>

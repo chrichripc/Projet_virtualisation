@@ -1,0 +1,44 @@
+version: '3'
+ # inspiré du yml du lab 6 
+services:
+  backend:
+    build: 
+      context : ./backend
+      dockerfile: Dockerfile.node
+    container_name: backend
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    networks:
+      - projet_virtualisation_app-network 
+
+  db:
+    image: mysql:8
+    container_name: db
+    environment:
+      MYSQL_ROOT_PASSWORD: root  # mdp root
+      MYSQL_DATABASE: mydb       # nom de base de données
+    ports:
+      - "3306:3306"              # Port MySQL sur la partie locale
+    volumes:
+      - db-data:/var/lib/mysql   # pour la persistance des données
+    networks:
+      - projet_virtualisation_app-network 
+
+  frontend:
+    build: 
+      context : ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "3000:80"
+    networks:
+      - projet_virtualisation_app-network 
+
+networks:
+  projet_virtualisation_app-network :
+    driver: bridge
+
+volumes:
+  db-data:

@@ -1,0 +1,25 @@
+# image NOde.js
+FROM node:16
+
+
+# repertoire de l'appli
+
+WORKDIR /app
+
+# copie les fichiers du projet dans le conteneur
+
+COPY ../package*.json ./
+RUN npm install
+COPY . .
+
+# installe le client mySQL (le projet perd toutes ses configuration faites sur mySQL chaque fois qu'il est reconstruit donc je le mets dans le dockerfile)
+RUN apt-get update && apt-get install -y default-mysql-client
+
+# port ou le backend va etre
+
+EXPOSE 5000
+COPY wait-for-it.sh /usr/local/bin/wait-for-it
+RUN chmod +x /usr/local/bin/wait-for-it
+
+# commande pour démarrer
+CMD ["wait-for-it","db:3306","--","node","app/routes/app.js"]
