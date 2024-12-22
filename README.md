@@ -47,6 +47,8 @@ DOCKER
 
 Dockerfile pour le backend
 Le Dockerfile pour le backend configure une image pour exécuter un serveur Node.js. il expose le port 5000 pour l'API.
+j'utilise wait-for-it un petit script shell utilisé principalement dans les environnements Docker pour garantir qu'une ressource comme une base de donnée est prete avant de lancer une autre application
+liens du téléchargement du fichier https://github.com/vishnubob/wait-for-it/blob/master/wait-for-it.sh
 
 Frontend Dockerfile
 
