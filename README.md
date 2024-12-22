@@ -60,7 +60,7 @@ Le fichier docker-compose.yml orchestre les services statique backend, frontend 
 
 
 
-Exemple d'API 
+Example API 
 Récupérer tous les utilisateurs :
 
 GET http://localhost:5000/users
@@ -69,8 +69,8 @@ POST http://localhost:5000/users
 Content-Type: application/json
 
 {
-  "name": "John Doe",
-  "email": "john.doe@example.com"
+  "name": "ltre",
+  "email": "jltre@et.esiea.fr"
 }
 Supprimer un utilisateur :
 DELETE http://localhost:5000/users/:id
